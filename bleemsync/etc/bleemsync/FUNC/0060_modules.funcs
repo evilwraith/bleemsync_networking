@@ -1,0 +1,39 @@
+#!/bin/bash
+exec 3>&1 4>&2
+trap 'exec 2>&4 1>&3' 0 1 2 3
+exec 1>/media/logs/modules.log 2>&1
+
+# mount root
+mount / -o rw,remount
+
+# create dir if it doesn't exist
+test -d /lib/modules && echo "exist" || mkdir -p /lib/modules
+test -d /media/bleemsync/tmp && echo "exist" || mkdir -p /media/bleemsync/tmp
+
+# Mount psc
+modlow=/lib/modules/
+modupp=/media/bleemsync/etc/bleemsync/SUP/modules/
+sbinlow=/usr/sbin/
+sbinupp=/media/bleemsync/sbin/
+liblow=/usr/lib/
+libupp=/media/bleemsync/lib/
+wod=/media/bleemsync/tmp
+
+# overlayfs mount
+#mount -t overlay -o lowerdir="$modlow",upperdir="$modupp",workdir="$wod" overlay "$modlow"
+#mount -t overlay -o lowerdir="$sbinlow",upperdir="$sbinupp",workdir="$wod" overlay "$sbinlow"
+#mount -t overlay -o lowerdir="$liblow",upperdir="$libupp",workdir="$wod" overlay "$liblow"
+mount -t overlay -o lowerdir="$modlow":"$modupp" overlay "$modlow"
+mount -t overlay -o lowerdir="$sbinlow":"$sbinupp" overlay "$sbinlow"
+mount -t overlay -o lowerdir="$liblow":"$libupp" overlay "$liblow"
+depmod -a
+
+# sanity check for permissions
+test -x /usr/sbin/wpa_supplicant && echo "yes" || chmod 755 /usr/sbin/wpa_supplicant
+test -x /usr/sbin/wpa_passphrase && echo "yes" || chmod 755 /usr/sbin/wpa_passphrase
+test -x /usr/sbin/wpa_cli && echo "yes" || chmod 755 /usr/sbin/wpa_cli
+test -x /usr/sbin/iw && echo "yes" || chmod 755 /usr/sbin/iw
+test -x /usr/sbin/wifi-wpa-setup && echo "yes" || chmod 755 /usr/sbin/wifi-wpa-setup
+
+# cleanup
+mount / -o ro,remount
