@@ -2,6 +2,6 @@
 
 Just copy on top of /media/bleemsync.
 
-<strike>Currently only works with NTFS and ext4 formatted drives.</strike>
-
 Use wifi-wpa-setup to setup networking, or just edit /media/bleemsync/etc/wpa_supplicant/wpa_supplicant.conf with your SSID and pass.
+
+The only drivers currently loaded are for the TP-Link WN725 wireless adapter(8188eu) and the Insignia USB Gigabit wired adapter(asix). More will be provided as needed. They can be compiled from the PSC Linux source using the 4.4.22 kernel.
