@@ -405,6 +405,7 @@ kernel/lib/libcrc32c.ko
 kernel/lib/ts_kmp.ko
 kernel/lib/ts_bm.ko
 kernel/lib/ts_fsm.ko
+kernel/lib/fonts/font.ko
 kernel/lib/lzo/lzo_compress.ko
 kernel/lib/lzo/lzo_decompress.ko
 kernel/lib/reed_solomon/reed_solomon.ko

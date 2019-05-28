@@ -30,9 +30,13 @@ test -d /media/bleemsync/tmp && echo "tmp found" || mkdir -p /media/bleemsync/tm
 test -d /var/volatile/usr/sbin && echo "/usr/sbin found" || mkdir -p /var/volatile/usr/sbin
 test -d /var/volatile/usr/bin && echo "/usr/bin found" || mkdir -p /var/volatile/usr/bin
 test -d /var/volatile/usr/lib && echo "/usr/lib found" || mkdir -p /var/volatile/usr/lib
+test -d /var/volatile/usr/etc && echo "/etc found" || mkdir -p /var/volatile/usr/etc
+test -d /var/volatile/usr/share && echo "/usr/share found" || mkdir -p /var/volatile/usr/share
+test -d /var/volatile/var/lib && echo "/var/lib found" || mkdir -p /var/volatile/var/lib
 test -d /var/volatile/lib/modules && echo "/lib/modules found" || mkdir -p /var/volatile/lib/modules
 test -d /etc/connman && echo "/etc/connman found" || mkdir -p /etc/connman
-#test -d /net && echo "/net found" || mkdir -p /net/connman
+test -d /etc/wpa_supplicant && echo "/etc/wpa_supplicant found" || mkdir -p /etc/wpa_supplicant
+test -d /usr/libexec && echo "/usr/libexec found" || mkdir -p /usr/libexec
 
 #permissions check
 chmod 666 /media/bleemsync/network/modules/4.4.22/modules.*
@@ -46,10 +50,14 @@ sbinlow=/usr/sbin
 sbinupp=/media/bleemsync/network/sbin
 liblow=/usr/lib
 libupp=/media/bleemsync/network/lib
-#libexeclow=/usr/libexec
-#libexecupp=/media/bleemsync/network/libexec
+libexeclow=/usr/libexec
+libexecupp=/media/bleemsync/network/libexec
+varlow=/var/lib
+varupp=/media/bleemsync/network/var/lib
 sharelow=/usr/share
 shareupp=/media/bleemsync/network/share
+etclow=/etc
+etcupp=/media/bleemsync/network/etc
 wod=/media/bleemsync/network/tmp
 
 fs=$(blkid -o /dev/sdb1 -s TYPE "$DEV" | awk '{ print $4 }' | sed 's/%//')
@@ -65,15 +73,11 @@ mount -t overlay modules -o lowerdir="$modlow",upperdir="$modupp",workdir="$wod"
 mount -t overlay -o lowerdir="$sbinlow":"$sbinupp" sbin "$sbinlow"
 mount -t overlay -o lowerdir="$binlow":"$binupp" bin "$binlow"
 mount -t overlay lib -o lowerdir="$liblow",upperdir="$libupp",workdir="$wod" "$liblow"
+mount -t overlay libexec -o lowerdir="$libexeclow",upperdir="$libexecupp",workdir="$wod" "$libexeclow"
+mount -t overlay var -o lowerdir="$varlow",upperdir="$varupp",workdir="$wod" "$varlow"
 mount -t overlay share -o lowerdir="$sharelow",upperdir="$shareupp",workdir="$wod" "$sharelow"
-#mount -t overlay libexec -o lowerdir="$libexeclow",upperdir="$libexecupp",workdir="$wod" "$libexeclow"
-mount -t overlay connman -o lowerdir="/etc/connman",upperdir="/media/bleemsync/network/etc/connman",workdir="$wod" "/etc/connman"
-mount -t overlay dbus -o lowerdir="/etc/dbus-1",upperdir="/media/bleemsync/network/etc/dbus-1",workdir="$wod" "/etc/dbus-1"
+mount -t overlay etc -o lowerdir="$etclow",upperdir="$etcupp",workdir="$wod" "$etclow"
 depmod -a
-#systemctl disable connman.service
-systemctl restart dbus.service
-systemctl enable connman.service
-systemctl start connman.service
 ;;
 'TYPE="vfat"')
 # tmpfs mount for fat filesystems
@@ -87,6 +91,12 @@ symlink_folder_files /var/volatile/usr/bin "$binupp"
 overlay_folder /var/volatile/usr/bin "$binlow"
 symlink_folder_files /var/volatile/usr/lib "$libupp"
 overlay_folder /var/volatile/usr/lib "$liblow"
+symlink_folder_files /var/volatile/var/lib "$varupp"
+overlay_folder /var/volatile/var/lib "$varlow"
+symlink_folder_files /var/volatile/usr/share "$shareupp"
+overlay_folder /var/volatile/usr/share "$sharelow"
+symlink_folder_files /var/volatile/usr/etc "$etcupp"
+overlay_folder /var/volatile/usr/etc "$etclow"
 depmod -a
 ;;
 *)
@@ -96,7 +106,7 @@ esac
 # sanity check for permissions
 chmod +x /media/bleemsync/network/bin/*
 chmod +x /media/bleemsync/network/sbin/*
-#chmod +x /media/bleemsync/network/libexec/*
+chmod +x /media/bleemsync/network/libexec/*
 
 # cleanup
 mount / -o ro,remount
