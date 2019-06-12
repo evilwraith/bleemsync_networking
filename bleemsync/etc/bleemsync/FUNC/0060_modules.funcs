@@ -77,6 +77,7 @@ mount -t overlay libexec -o lowerdir="$libexeclow",upperdir="$libexecupp",workdi
 mount -t overlay var -o lowerdir="$varlow",upperdir="$varupp",workdir="$wod" "$varlow"
 mount -t overlay share -o lowerdir="$sharelow",upperdir="$shareupp",workdir="$wod" "$sharelow"
 mount -t overlay etc -o lowerdir="$etclow",upperdir="$etcupp",workdir="$wod" "$etclow"
+#mount -t overlay firmware -o lowerdir="/lib/firmware",upperdir="/media/bleemsync/network/firmware",workdir="$wod" "/lib/firmware"
 depmod -a
 ;;
 'TYPE="vfat"')

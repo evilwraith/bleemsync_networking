@@ -4,23 +4,27 @@ trap 'exec 2>&4 1>&3' 0 1 2 3
 exec 1>/media/logs/startnet.log 2>&1
 
 # Probe for devices
-modprobe asix
-modprobe 8188eu
-
+#modprobe asix
+#modprobe 8188eu
+#modprobe rtl8822bu
+#modprobe rtl8812au
+modprobe 88x2bu
+#modprobe btusb
+ip link set wlan0 up
 
 systemctl restart ssh.service
 systemctl restart telnet.socket
 mount / -o rw,remount
 systemctl restart dbus.service
-#systemctl enable wpa_supplicant-nl80211@.service
+systemctl enable bluetooth.service
 systemctl enable wpa_supplicant.service
 systemctl start wpa_supplicant.service
+systemctl start bluetooth.service
 mount / -o ro,remount
 
 # For wired adapters
 udhcpc -R -n -p /var/run/udhcpc.eth0.pid -i eth0
 
 # For wireless adapters
-ip link set wlan0 up
 #wpa_supplicant -B -Dnl80211 -iwlan0 -c/media/bleemsync/network/etc/wpa_supplicant/wpa_supplicant.conf
 udhcpc -R -n -p /var/run/udhcpc.wlan0.pid -i wlan0
