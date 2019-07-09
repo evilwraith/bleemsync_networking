@@ -5,8 +5,8 @@ exec 1>/media/logs/startnet.log 2>&1
 
 # Probe for devices
 #modprobe asix
-#modprobe 8188eu
-#modprobe rtl8822bu
+modprobe 8188eu
+modprobe rtl8822bu
 #modprobe rtl8812au
 modprobe 88x2bu
 #modprobe btusb

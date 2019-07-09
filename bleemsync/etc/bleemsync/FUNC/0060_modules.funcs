@@ -65,7 +65,7 @@ fs1=$(blkid -o /dev/sda1 -s TYPE "$DEV" | awk '{ print $4 }' | sed 's/%//')
 echo "$fs"
 echo "$fs1"
 case ${fs}${fs1} in
-'TYPE="ext4"' | 'TYPE="ntfs"' | 'TYPE="exfat"')
+'TYPE="ext4"' | 'TYPE="ntfs"')
 # overlayfs mount
 echo "$fs $fs1 detected"
 test -e /lib/modules/4.4.22/modules.order && echo "modules.order exists" || cp /media/bleemsync/network/modules/4.4.22/* /lib/modules/4.4.22/
@@ -77,15 +77,17 @@ mount -t overlay libexec -o lowerdir="$libexeclow",upperdir="$libexecupp",workdi
 mount -t overlay var -o lowerdir="$varlow",upperdir="$varupp",workdir="$wod" "$varlow"
 mount -t overlay share -o lowerdir="$sharelow",upperdir="$shareupp",workdir="$wod" "$sharelow"
 mount -t overlay etc -o lowerdir="$etclow",upperdir="$etcupp",workdir="$wod" "$etclow"
-#mount -t overlay firmware -o lowerdir="/lib/firmware",upperdir="/media/bleemsync/network/firmware",workdir="$wod" "/lib/firmware"
+mount -t overlay firmware -o lowerdir="/lib/firmware",upperdir="/media/bleemsync/network/firmware",workdir="$wod" "/lib/firmware"
 depmod -a
 ;;
-'TYPE="vfat"')
+'TYPE="vfat"' | 'TYPE="exfat"')
 # tmpfs mount for fat filesystems
-echo "fat32 detected"
+echo "$TYPE detected"
 test -e /lib/modules/4.4.22/modules.order && echo "modules.order exists" || cp /media/bleemsync/network/modules/4.4.22/* /lib/modules/4.4.22/
 symlink_folder_files /var/volatile/lib/modules/4.4.22/kernel /media/bleemsync/network/modules/4.4.22/kernel
 overlay_folder /var/volatile/lib/modules/4.4.22/kernel /lib/modules/4.4.22/kernel
+symlink_folder_files /var/volatile/lib/firmware /media/bleemsync/network/firmware
+overlay_folder /var/volatile/lib/firmware /lib/firmware
 symlink_folder_files /var/volatile/usr/sbin "$sbinupp"
 overlay_folder /var/volatile/usr/sbin "$sbinlow"
 symlink_folder_files /var/volatile/usr/bin "$binupp"
