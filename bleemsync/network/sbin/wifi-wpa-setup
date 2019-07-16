@@ -2,18 +2,14 @@
 
 SSID="$1"
 if [ -z "$SSID" ]; then
-#  echo "Enter your SSID (Your SSID must not include spaces):"
-  dialog --clear --title "Enter your SSID (Your SSID must not include spaces):" \
-          --inputbox "Enter new value" 0 0 $1
+  echo "Enter your SSID (Your SSID must not include spaces):"
   read SSID
 fi
 [ -z "$SSID" ] && exit 1
 
 PASS="$2"
 if [ -z "$PASS" ]; then
-#  echo "Enter your Wi-Fi password:"
-dialog --clear --title "Enter your Wi-Fi password:" \
-          --inputbox "Enter value" 0 0 $2 2> $PASS
+  echo "Enter your Wi-Fi password:"
   read PASS
 fi
 if [ "${#PASS}" -lt "8" ] || [ "${#PASS}" -gt "63" ]; then
@@ -22,7 +18,7 @@ if [ "${#PASS}" -lt "8" ] || [ "${#PASS}" -gt "63" ]; then
 fi
 
 wificonf_h(){
-  echo 'ctrl_interface=/media/bleemsync/network/etc/wpa_supplicant'
+  echo 'ctrl_interface=/media/bleemsync/etc/wpa_supplicant/'
   echo 'update_config=1'
   echo
 }
@@ -38,7 +34,7 @@ wificonf(){
   wpa_passphrase ${1+"$@"} | grep -Fv '#'
 }
 
-conf="/media/bleemsync/etc/network/wpa_supplicant/wpa_supplicant.conf"
+conf="/media/bleemsync/etc/wpa_supplicant/wpa_supplicant.conf"
 wificonf "$SSID" "$PASS" > "$conf" && ret=true || ret=false
 $ret || wificonf_d > "$conf"
 
