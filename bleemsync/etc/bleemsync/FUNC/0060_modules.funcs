@@ -26,7 +26,7 @@ mount / -o rw,remount
 
 # create dir if it doesn't exist
 test -d /lib/modules/4.4.22/kernel && echo "/lib/modules found" || mkdir -p /lib/modules/4.4.22/kernel
-test -d /media/bleemsync/network/tmp && echo "tmp found" || mkdir -p /media/bleemsync/network/tmp
+test -d /media/bleemsync/tmp && echo "tmp found" || mkdir -p /media/bleemsync/tmp
 test -d /var/volatile/usr/sbin && echo "/usr/sbin found" || mkdir -p /var/volatile/usr/sbin
 test -d /var/volatile/usr/bin && echo "/usr/bin found" || mkdir -p /var/volatile/usr/bin
 test -d /var/volatile/usr/lib && echo "/usr/lib found" || mkdir -p /var/volatile/usr/lib
@@ -37,6 +37,7 @@ test -d /var/volatile/lib/modules && echo "/lib/modules found" || mkdir -p /var/
 test -d /etc/connman && echo "/etc/connman found" || mkdir -p /etc/connman
 test -d /etc/wpa_supplicant && echo "/etc/wpa_supplicant found" || mkdir -p /etc/wpa_supplicant
 test -d /usr/libexec && echo "/usr/libexec found" || mkdir -p /usr/libexec
+test -d /var/run/wpa_supplicant && echo "/var/run/wpa_supplicant found" || mkdir -p /var/run/wpa_supplicant
 
 #permissions check
 chmod 666 /media/bleemsync/network/modules/4.4.22/modules.*
@@ -58,6 +59,8 @@ sharelow=/usr/share
 shareupp=/media/bleemsync/network/share
 etclow=/etc
 etcupp=/media/bleemsync/network/etc
+runlow=/var/run/wpa_supplicant
+runupp=/media/bleemsync/network/var/run/wpa_supplicant
 wod=/media/bleemsync/network/tmp
 
 fs=$(blkid -o /dev/sdb1 -s TYPE "$DEV" | awk '{ print $4 }' | sed 's/%//')
@@ -65,7 +68,7 @@ fs1=$(blkid -o /dev/sda1 -s TYPE "$DEV" | awk '{ print $4 }' | sed 's/%//')
 echo "$fs"
 echo "$fs1"
 case ${fs}${fs1} in
-'TYPE="ext4"' | 'TYPE="ntfs"')
+'TYPE="ext4"')
 # overlayfs mount
 echo "$fs $fs1 detected"
 test -e /lib/modules/4.4.22/modules.order && echo "modules.order exists" || cp /media/bleemsync/network/modules/4.4.22/* /lib/modules/4.4.22/
@@ -78,9 +81,10 @@ mount -t overlay var -o lowerdir="$varlow",upperdir="$varupp",workdir="$wod" "$v
 mount -t overlay share -o lowerdir="$sharelow",upperdir="$shareupp",workdir="$wod" "$sharelow"
 mount -t overlay etc -o lowerdir="$etclow",upperdir="$etcupp",workdir="$wod" "$etclow"
 mount -t overlay firmware -o lowerdir="/lib/firmware",upperdir="/media/bleemsync/network/firmware",workdir="$wod" "/lib/firmware"
+mount -t overlay run -o lowerdir="$runlow",upperdir="$runupp",workdir="$wod" "$runlow"
 depmod -a
 ;;
-'TYPE="vfat"' | 'TYPE="exfat"')
+'TYPE="vfat"' | 'TYPE="exfat"' | 'TYPE="ntfs"')
 # tmpfs mount for fat filesystems
 echo "$TYPE detected"
 test -e /lib/modules/4.4.22/modules.order && echo "modules.order exists" || cp /media/bleemsync/network/modules/4.4.22/* /lib/modules/4.4.22/
@@ -100,6 +104,8 @@ symlink_folder_files /var/volatile/usr/share "$shareupp"
 overlay_folder /var/volatile/usr/share "$sharelow"
 symlink_folder_files /var/volatile/usr/etc "$etcupp"
 overlay_folder /var/volatile/usr/etc "$etclow"
+symlink_folder_files /var/volatile/var/run/wpa_supplicant "$runupp"
+overlay_folder /var/volatile/var/run/wpa_supplicant "$varlow"
 depmod -a
 ;;
 *)
