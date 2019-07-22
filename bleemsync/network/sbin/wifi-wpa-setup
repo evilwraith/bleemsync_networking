@@ -9,11 +9,13 @@ fi
 
 PASS="$2"
 if [ -z "$PASS" ]; then
-  echo "Enter your Wi-Fi password:"
+  echo "Enter your Wi-Fi password, leave blank for open AP:"
   read PASS
 fi
 if [ "${#PASS}" -lt "8" ] || [ "${#PASS}" -gt "63" ]; then
   echo "Passphrase must be 8..63 characters"
+elif [ "${#PASS}" -eq "null" ]; then
+  $PASS='key_mgmt=NONE'
   exit 1
 fi
 
