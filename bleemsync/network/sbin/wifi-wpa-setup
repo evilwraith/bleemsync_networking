@@ -22,6 +22,8 @@ fi
 wificonf_h(){
   echo 'ctrl_interface=/media/bleemsync/network/etc/wpa_supplicant'
   echo 'update_config=1'
+  echo 'ap_scan=1'
+  echo 'autoscan=exponential:3:300'
   echo
 }
 
