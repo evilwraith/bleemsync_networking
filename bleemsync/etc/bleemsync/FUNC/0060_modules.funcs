@@ -26,7 +26,7 @@ mount / -o rw,remount
 
 # create dir if it doesn't exist
 test -d /lib/modules/4.4.22/kernel && echo "/lib/modules found" || mkdir -p /lib/modules/4.4.22/kernel
-test -d /media/bleemsync/tmp && echo "tmp found" || mkdir -p /media/bleemsync/tmp
+test -d /media/bleemsync/network/tmp && echo "tmp found" || mkdir -p /media/bleemsync/network/tmp
 test -d /var/volatile/usr/sbin && echo "/usr/sbin found" || mkdir -p /var/volatile/usr/sbin
 test -d /var/volatile/usr/bin && echo "/usr/bin found" || mkdir -p /var/volatile/usr/bin
 test -d /var/volatile/usr/lib && echo "/usr/lib found" || mkdir -p /var/volatile/usr/lib
