@@ -9,17 +9,21 @@ fi
 
 PASS="$2"
 if [ -z "$PASS" ]; then
-#  echo "Enter your Wi-Fi password:"
+  echo "Enter your Wi-Fi password, leave blank for open AP:"
   read PASS
 fi
 if [ "${#PASS}" -lt "8" ] || [ "${#PASS}" -gt "63" ]; then
   echo "Passphrase must be 8..63 characters"
+elif [ "${#PASS}" -eq "null" ]; then
+  $PASS='key_mgmt=NONE'
   exit 1
 fi
 
 wificonf_h(){
   echo 'ctrl_interface=/media/bleemsync/network/etc/wpa_supplicant'
   echo 'update_config=1'
+  echo 'ap_scan=1'
+  echo 'autoscan=exponential:3:300'
   echo
 }
 
@@ -34,7 +38,7 @@ wificonf(){
   wpa_passphrase ${1+"$@"} | grep -Fv '#'
 }
 
-conf="/media/bleemsync/etc/network/wpa_supplicant/wpa_supplicant.conf"
+conf="/media/bleemsync/network/etc/wpa_supplicant/wpa_supplicant.conf"
 wificonf "$SSID" "$PASS" > "$conf" && ret=true || ret=false
 $ret || wificonf_d > "$conf"
 
