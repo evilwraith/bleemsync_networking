@@ -37,7 +37,7 @@ test -d /var/volatile/lib/modules && echo "/lib/modules found" || mkdir -p /var/
 test -d /etc/connman && echo "/etc/connman found" || mkdir -p /etc/connman
 test -d /etc/wpa_supplicant && echo "/etc/wpa_supplicant found" || mkdir -p /etc/wpa_supplicant
 test -d /usr/libexec && echo "/usr/libexec found" || mkdir -p /usr/libexec
-test -d /var/run/wpa_supplicant && echo "/var/run/wpa_supplicant found" || mkdir -p /var/run/wpa_supplicant
+test -d /var/volatile/var/run/wpa_supplicant && echo "/var/volatile/var/run/wpa_supplicant found" || mkdir -p /var/volatile/var/run/wpa_supplicant
 
 #permissions check
 chmod 666 /media/bleemsync/network/modules/4.4.22/modules.*
@@ -53,14 +53,14 @@ liblow=/usr/lib
 libupp=/media/bleemsync/network/lib
 libexeclow=/usr/libexec
 libexecupp=/media/bleemsync/network/libexec
-varlow=/var/lib
-varupp=/media/bleemsync/network/var/lib
+#varlow=/var/lib
+#varupp=/media/bleemsync/network/var/lib
 sharelow=/usr/share
 shareupp=/media/bleemsync/network/share
 etclow=/etc
 etcupp=/media/bleemsync/network/etc
-runlow=/var/run/wpa_supplicant
-runupp=/media/bleemsync/network/var/run/wpa_supplicant
+#runlow=/var/run/wpa_supplicant
+#runupp=/media/bleemsync/network/var/run/wpa_supplicant
 wod=/media/bleemsync/network/tmp
 
 fs=$(blkid -o /dev/sdb1 -s TYPE "$DEV" | awk '{ print $4 }' | sed 's/%//')
@@ -77,7 +77,7 @@ mount -t overlay -o lowerdir="$sbinlow":"$sbinupp" sbin "$sbinlow"
 mount -t overlay -o lowerdir="$binlow":"$binupp" bin "$binlow"
 mount -t overlay lib -o lowerdir="$liblow",upperdir="$libupp",workdir="$wod" "$liblow"
 mount -t overlay libexec -o lowerdir="$libexeclow",upperdir="$libexecupp",workdir="$wod" "$libexeclow"
-mount -t overlay var -o lowerdir="$varlow",upperdir="$varupp",workdir="$wod" "$varlow"
+#mount -t overlay var -o lowerdir="$varlow",upperdir="$varupp",workdir="$wod" "$varlow"
 mount -t overlay share -o lowerdir="$sharelow",upperdir="$shareupp",workdir="$wod" "$sharelow"
 mount -t overlay etc -o lowerdir="$etclow",upperdir="$etcupp",workdir="$wod" "$etclow"
 mount -t overlay firmware -o lowerdir="/lib/firmware",upperdir="/media/bleemsync/network/firmware",workdir="$wod" "/lib/firmware"
@@ -98,14 +98,14 @@ symlink_folder_files /var/volatile/usr/bin "$binupp"
 overlay_folder /var/volatile/usr/bin "$binlow"
 symlink_folder_files /var/volatile/usr/lib "$libupp"
 overlay_folder /var/volatile/usr/lib "$liblow"
-symlink_folder_files /var/volatile/var/lib "$varupp"
-overlay_folder /var/volatile/var/lib "$varlow"
+#symlink_folder_files /var/volatile/var/lib "$varupp"
+#overlay_folder /var/volatile/var/lib "$varlow"
 symlink_folder_files /var/volatile/usr/share "$shareupp"
 overlay_folder /var/volatile/usr/share "$sharelow"
 symlink_folder_files /var/volatile/usr/etc "$etcupp"
 overlay_folder /var/volatile/usr/etc "$etclow"
-symlink_folder_files /var/volatile/var/run/wpa_supplicant "$runupp"
-overlay_folder /var/volatile/var/run/wpa_supplicant "$varlow"
+#symlink_folder_files /var/volatile/var/run/wpa_supplicant "$runupp"
+#overlay_folder /var/volatile/var/run/wpa_supplicant "$varlow"
 depmod -a
 ;;
 *)
